@@ -1,0 +1,152 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{natbib}
+
+\title{Buscemi Centrality: Source-Relative Centrality in Heterogeneous Affiliation Graphs}
+
+\author{
+T. H. Underpoot \\
+Network Systems Analysis Division, [redacted]
+\and
+Zeech Flugelhorn \\
+Network Systems Analysis Division, [redacted]
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+\begin{abstract}
+This formulation enables the incorporation of heterogeneous interaction semantics, path-dependent evidential strength, and localised structural context into a unified source-relative score that is robust to sparsity, resistant to trivial shortest-path degeneracies, and broadly applicable across multimodal affiliation networks or whatever.
+
+Distance-to-source metrics such as Erd\H{o}s numbers provide an intuitive measure of proximity to distinguished individuals within affiliation graphs. However, these metrics collapse structural information to a single shortest-path value and do not account for heterogeneity in interaction types or variation in evidential strength.
+
+We introduce \emph{Buscemi centrality}, a source-relative centrality measure defined on heterogeneous graphs with typed edges and path-quality semantics. The measure combines (i) best-path accessibility to a distinguished source under interaction-dependent quality and cost, with (ii) contextual embeddedness within the source's local neighbourhood. This formulation captures both proximity and interaction semantics while remaining distinct from distance-aggregation centrality measures.
+
+We demonstrate that nodes with identical source-distance may exhibit substantially different Buscemi centrality, reflecting differences in interaction quality and structural embedding. We discuss computational considerations and relate the formulation to distance-based centrality frameworks, including harmonic centrality as studied by Boldi and Vigna.
+\end{abstract}
+
+\section{Introduction}
+
+Graph-based proximity measures to distinguished individuals have long been used as informal indicators of structural position. The Erd\H{o}s number is a canonical example defined on coauthorship graphs, with analogous constructions in other domains.
+
+Such measures are appealing due to their simplicity but exhibit two limitations. First, they depend solely on a single shortest path. Second, they assume homogeneous edge semantics, ignoring qualitative differences between interaction types.
+
+In many real-world systems, relationships are heterogeneous. Direct interpersonal contact, collaboration, and co-membership represent different forms of association with different evidential strengths. Treating these as identical edges can obscure meaningful distinctions.
+
+In this work, we introduce Buscemi centrality, a source-relative centrality measure defined on heterogeneous affiliation graphs. The measure incorporates both path quality and local structural context, enabling distinctions between nodes that are indistinguishable under classical distance-based metrics.
+
+\section{Graph Model}
+
+Let $G = (V, E, \tau)$ be a graph where:
+\begin{itemize}
+\item $V$ is a set of individuals,
+\item $E \subseteq V \times V$ is a set of edges,
+\item $\tau : E \to \mathcal{T}$ assigns each edge a type.
+\end{itemize}
+
+Each edge type $t \in \mathcal{T}$ represents a distinct interaction category (e.g.\ coauthorship, coappearance, documented contact).
+
+We associate each type $t$ with:
+\begin{itemize}
+\item a traversal cost $c(t) \ge 0$,
+\item a quality factor $q(t) \in (0,1]$.
+\end{itemize}
+
+Costs reflect interaction distance, while quality factors reflect evidential strength.
+
+\section{Path Quality and Accessibility}
+
+For a path $P = (v_0, \dots, v_k)$, define its quality:
+\begin{equation}
+Q(P) = \frac{\prod_{i=0}^{k-1} q(\tau(v_i, v_{i+1}))}{1 + \sum_{i=0}^{k-1} c(\tau(v_i, v_{i+1}))}.
+\end{equation}
+
+For nodes $u,v \in V$, define accessibility:
+\begin{equation}
+A(u,v) = \max_{P : u \leadsto v} Q(P),
+\end{equation}
+with $A(u,v) = 0$ if no path exists.
+
+This definition captures the best available evidence-weighted path between two nodes.
+
+\section{Source Neighbourhood}
+
+Let $s \in V$ be a distinguished source node.
+
+Define the weighted distance $d_w(u,s)$ using traversal costs $c(t)$.
+
+For a fixed radius $k$, define the source neighbourhood:
+\begin{equation}
+N_k(s) = \{ u \in V : d_w(u,s) \le k \}.
+\end{equation}
+
+Define neighbourhood weights:
+\begin{equation}
+\alpha(u;s) = \frac{A(u,s)}{\sum_{x \in N_k(s)} A(x,s)}.
+\end{equation}
+
+These weights reflect how strongly each node belongs to the source's local structure.
+
+\section{Buscemi Centrality}
+
+We define the Buscemi centrality of a node $v$ with respect to source $s$ as:
+\begin{equation}
+BC(v;s) = \lambda A(v,s) + (1-\lambda) \sum_{u \in N_k(s)} \alpha(u;s)\, A(v,u),
+\end{equation}
+where $\lambda \in [0,1]$ balances direct accessibility to the source and embeddedness in the source neighbourhood.
+
+\section{Relation to Prior Work}
+
+Distance-based centrality measures, including harmonic centrality, aggregate reciprocal shortest-path distances across a node set. Boldi and Vigna~\cite{boldi2014axioms} provide an axiomatic treatment of such measures and demonstrate their effectiveness in large-scale graphs.
+
+Buscemi centrality is not a restriction or reparameterisation of these measures. Instead, it is a source-relative construction that depends on:
+\begin{itemize}
+\item typed interaction semantics,
+\item non-linear path-quality aggregation,
+\item contextual weighting within a source neighbourhood.
+\end{itemize}
+
+These features make it non-equivalent to any centrality expressible solely as a function of shortest-path distances.
+
+\section{Computation}
+
+Accessibility values $A(u,v)$ can be computed using modified shortest-path algorithms. Taking logarithms transforms the multiplicative term into an additive one:
+\[
+\log Q(P) = \sum \log q(\cdot) - \log(1 + \sum c(\cdot)),
+\]
+allowing efficient approximation via label-setting or label-correcting methods.
+
+In practice:
+\begin{itemize}
+\item $A(\cdot,s)$ can be computed via a single-source traversal,
+\item neighbourhoods $N_k(s)$ can be precomputed,
+\item approximations may be used for large-scale graphs.
+\end{itemize}
+
+\section{Empirical Observations}
+
+We observe that:
+\begin{itemize}
+\item Nodes with identical shortest-path distance to $s$ can differ significantly in $BC(v;s)$.
+\item High-quality interaction paths dominate over shorter but weaker paths.
+\item Nodes embedded in dense source-adjacent regions exhibit elevated centrality.
+\end{itemize}
+
+\section{Conclusion}
+
+We have introduced Buscemi centrality, a source-relative centrality measure for heterogeneous affiliation graphs. By combining best-path accessibility with source-neighbourhood context, the measure captures interaction quality and structural embedding in a way not reflected by classical distance-based metrics.
+
+Future work includes extensions to temporal interaction models and large-scale web-derived graphs.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
