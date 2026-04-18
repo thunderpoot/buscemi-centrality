@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#fbfaf5" media="(prefers-color-scheme: light)" />
+
+  <title>Buscemi Centrality Explorer: IETF edition</title>
+  <meta name="description" content="Interactive explorer for Buscemi centrality on the IETF co-authorship graph. Rank Internet-Draft and RFC authors, then compute source-relative centrality with live-tunable quality, cost, and neighbourhood parameters." />
+  <meta name="keywords" content="Buscemi centrality, IETF, RFC, Internet-Draft, graph theory, SIGBOVIK, source-relative centrality, co-authorship, Erdős number, Bacon number, datatracker" />
+  <meta name="author" content="T. H. Underpoot and Zeech Flugelhorn" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+
+  <link rel="canonical" href="/" id="canonical-link" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Buscemi Centrality Explorer" />
+  <meta property="og:description" content="Source-relative centrality on the IETF co-authorship graph. Rank RFC and Internet-Draft authors; compute Buscemi centrality relative to anyone who has ever authored an I-D." />
+  <meta property="og:image" content="assets/buscemi.jpg" />
+  <meta property="og:image:alt" content="Portrait of Steve Buscemi." />
+  <meta property="og:locale" content="en" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Buscemi Centrality Explorer" />
+  <meta name="twitter:description" content="Source-relative centrality on the IETF co-authorship graph." />
+  <meta name="twitter:image" content="assets/buscemi.jpg" />
+  <meta name="twitter:image:alt" content="Portrait of Steve Buscemi." />
+
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="alternate icon" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/buscemi.jpg" />
+
+  <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/JetBrainsMono-VariableFont_wght.woff2" as="font" type="font/woff2" crossorigin />
+
+  <script>
+    // Apply the persisted colour theme before paint to avoid a flash.
+    (function () {
+      try {
+        var t = localStorage.getItem("bc-theme");
+        if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+      } catch (_) { /* private mode, etc. */ }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="vendor/katex/katex.min.css" />
+  <link rel="stylesheet" href="style.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Buscemi Centrality Explorer",
+    "description": "Interactive web tool that computes Buscemi centrality on the IETF co-authorship graph using live data from datatracker.ietf.org.",
+    "applicationCategory": "ResearchApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires JavaScript and a modern browser with IndexedDB and ES modules.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": [
+      { "@type": "Person", "name": "T. H. Underpoot" },
+      { "@type": "Person", "name": "Zeech Flugelhorn" }
+    ],
+    "isBasedOn": {
+      "@type": "ScholarlyArticle",
+      "name": "Buscemi Centrality: Source-Relative Centrality in Heterogeneous Affiliation Graphs",
+      "isPartOf": "SIGBOVIK 2026"
+    }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header" role="banner">
+    <div class="wrap">
+      <div class="brand">
+        <picture>
+          <img class="brand-avatar" id="brand-avatar"
+               src="assets/buscemi.jpg"
+               alt="Portrait of Steve Buscemi."
+               width="72" height="72"
+               loading="eager"
+               decoding="async"
+               onerror="this.outerHTML='<span class=&quot;brand-avatar-fallback&quot; role=&quot;img&quot; aria-label=&quot;Steve Buscemi placeholder.&quot;>SB</span>'" />
+        </picture>
+        <div class="brand-text">
+          <h1>Buscemi Centrality Explorer</h1>
+          <p class="tagline">
+            Source-relative centrality on the IETF co-authorship graph. Data pulled weekly
+            from <a href="https://datatracker.ietf.org/api/" rel="noopener">datatracker.ietf.org</a>.
+          </p>
+        </div>
+        <div class="brand-chrome">
+          <div class="brand-status" id="status-chip" aria-live="polite" aria-atomic="true" data-state="loading">
+            <span class="dot" aria-hidden="true"></span>
+            <span class="text" id="status-text">loading...</span>
+          </div>
+          <div class="theme-toggle" role="radiogroup" aria-label="Colour theme">
+            <button type="button" data-theme-set="light"  aria-label="Light theme"  title="Light"  aria-pressed="false">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            </button>
+            <button type="button" data-theme-set="system" aria-label="System theme" title="System" aria-pressed="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </button>
+            <button type="button" data-theme-set="dark"   aria-label="Dark theme"   title="Dark"   aria-pressed="false">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <nav aria-label="Sections">
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" id="tab-btn-leaderboards" aria-controls="tab-leaderboards" data-tab="leaderboards" aria-selected="true">Leaderboards</button>
+          <button class="tab" role="tab" id="tab-btn-explorer"     aria-controls="tab-explorer"     data-tab="explorer"     aria-selected="false" tabindex="-1">BC Explorer</button>
+          <button class="tab" role="tab" id="tab-btn-about"        aria-controls="tab-about"        data-tab="about"        aria-selected="false" tabindex="-1">About</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+
+    <!-- ==================== LEADERBOARDS ==================== -->
+    <section class="panel" id="tab-leaderboards" role="tabpanel" aria-labelledby="tab-btn-leaderboards">
+      <h2>Leaderboards</h2>
+      <p class="muted">
+        Ranked over every author Datatracker has ever seen.<sup class="fn">1</sup>
+        Click a row to pin that person as the source node in the BC Explorer.
+      </p>
+      <p class="small footnote">
+        <sup>1</sup> Rankings are final, binding, and unappealable, until someone commits a
+        new Internet-Draft, which happens on the order of hourly.
+      </p>
+      <div class="board-controls">
+        <label>
+          Search
+          <input type="search" id="lb-search" placeholder="name or ASCII spelling" autocomplete="off" />
+        </label>
+        <label>
+          Rows
+          <select id="lb-limit">
+            <option>25</option>
+            <option selected>100</option>
+            <option>500</option>
+            <option>all</option>
+          </select>
+        </label>
+      </div>
+      <div class="table-scroll">
+        <table class="leaderboard sortable" id="leaderboard-table">
+          <caption class="sr-only">Authors ranked by the selected metric. Click a column header to sort; click again to reverse. Click a row to load that author as the Buscemi Centrality source.</caption>
+          <thead>
+            <tr>
+              <th scope="col" data-col="rank"       aria-sort="none">#</th>
+              <th scope="col" data-col="name"       aria-sort="none">Name</th>
+              <th scope="col" class="num" data-col="rfc_first"  aria-sort="none">RFC 1st</th>
+              <th scope="col" class="num" data-col="rfc_co"     aria-sort="none">RFC co</th>
+              <th scope="col" class="num" data-col="id_first"   aria-sort="none">ID 1st</th>
+              <th scope="col" class="num" data-col="id_co"      aria-sort="none">ID co</th>
+              <th scope="col" class="num" data-col="total_docs" aria-sort="descending">Total</th>
+              <th scope="col" class="num" data-col="weighted"   aria-sort="none">Weighted</th>
+              <th scope="col" class="num" data-col="hindex"     aria-sort="none">h</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-tbody">
+            <tr class="loading-row"><td colspan="9">Loading IETF graph...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ==================== EXPLORER ==================== -->
+    <section class="panel" id="tab-explorer" role="tabpanel" aria-labelledby="tab-btn-explorer" hidden>
+      <h2>BC Explorer</h2>
+      <p class="muted">
+        Pick any author as the source node <em>s</em>. The tool then computes
+        <strong>Buscemi centrality</strong> of every other author relative to that <em>s</em>:
+        <code>BC(v; s) = λ · A(v, s) + (1 − λ) · Σ α(u; s) · A(v, u)</code>,
+        with all ingredients live-tunable in the panel on the left. All parameters are
+        dimensionless. Any semantic interpretations attached to them by the reader are the
+        reader's own.
+      </p>
+
+      <aside class="source-banner" id="source-banner" data-set="false" aria-live="polite">
+        <span class="label">Computing Buscemi centrality relative to</span>
+        <strong class="name" id="source-name">no source selected</strong>
+        <span class="stats" id="source-stats"></span>
+        <span class="explainer" id="source-explainer">Pick a source in the panel on the left. The measure is undefined in the absence of a source; the page will continue to function, but only nominally.</span>
+      </aside>
+
+      <div class="explorer-grid">
+        <aside class="controls" aria-label="Explorer controls">
+          <h3>Source node</h3>
+          <div class="source-picker">
+            <label for="source-search" class="sr-only">Search authors</label>
+            <input type="search" id="source-search" placeholder="Search authors..." autocomplete="off" aria-describedby="source-search-help" />
+            <span class="sr-only" id="source-search-help">Type to filter by name; click a result or press Enter to set it as the source.</span>
+            <ul id="source-suggest" class="suggest" role="listbox" hidden></ul>
+            <div class="source-presets" role="group" aria-label="Preset sources">
+              <button class="preset" type="button" data-preset="ekr">Eric Rescorla</button>
+              <button class="preset" type="button" data-preset="jari">Jari Arkko</button>
+              <button class="preset" type="button" data-preset="stpeter">Peter Saint-Andre</button>
+              <button class="preset" type="button" data-preset="mt">Martin Thomson</button>
+            </div>
+          </div>
+
+          <h3>Parameters</h3>
+          <label class="slider">
+            <span class="lbl">λ (direct vs. neighbourhood mix)</span>
+            <input type="range" id="param-lambda" min="0" max="1" step="0.05" value="0.5"
+                   aria-describedby="out-lambda param-lambda-help" />
+            <output for="param-lambda" id="out-lambda">0.50</output>
+            <span class="sr-only" id="param-lambda-help">0 uses only neighbourhood embedding; 1 uses only direct accessibility.</span>
+          </label>
+          <label class="slider">
+            <span class="lbl">r (neighbourhood radius, weighted-cost)</span>
+            <input type="range" id="param-r" min="1" max="4" step="0.5" value="2" aria-describedby="out-r" />
+            <output for="param-r" id="out-r">2.0</output>
+          </label>
+          <label class="slider">
+            <span class="lbl">D (path depth cap for A)</span>
+            <input type="range" id="param-depth" min="1" max="5" step="1" value="3" aria-describedby="out-depth" />
+            <output for="param-depth" id="out-depth">3</output>
+          </label>
+          <label class="slider">
+            <span class="lbl">K (Pareto frontier width)</span>
+            <input type="range" id="param-k" min="1" max="20" step="1" value="6" aria-describedby="out-k" />
+            <output for="param-k" id="out-k">6</output>
+          </label>
+
+          <h3>Edge types</h3>
+          <div class="table-scroll">
+            <table class="edges">
+              <caption class="sr-only">Cost and quality factors per edge type.</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Type</th>
+                  <th scope="col">cost c(t)</th>
+                  <th scope="col">quality q(t)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row"><span class="swatch rfc" aria-hidden="true"></span> coauthored_rfc</th>
+                  <td><label class="sr-only" for="cost-rfc">Cost for coauthored RFC</label><input type="number" id="cost-rfc" min="0" step="0.1" value="1" /></td>
+                  <td><label class="sr-only" for="q-rfc">Quality for coauthored RFC</label><input type="number" id="q-rfc" min="0" max="1" step="0.05" value="0.9" /></td>
+                </tr>
+                <tr>
+                  <th scope="row"><span class="swatch id" aria-hidden="true"></span> coauthored_id</th>
+                  <td><label class="sr-only" for="cost-id">Cost for coauthored I-D</label><input type="number" id="cost-id" min="0" step="0.1" value="1" /></td>
+                  <td><label class="sr-only" for="q-id">Quality for coauthored I-D</label><input type="number" id="q-id" min="0" max="1" step="0.05" value="0.8" /></td>
+                </tr>
+                <tr>
+                  <th scope="row"><span class="swatch rep" aria-hidden="true"></span> repeated_coauthorship</th>
+                  <td><label class="sr-only" for="cost-rep">Cost for repeated co-authorship</label><input type="number" id="cost-rep" min="0" step="0.1" value="1" /></td>
+                  <td><label class="sr-only" for="q-rep">Quality for repeated co-authorship</label><input type="number" id="q-rep" min="0" max="1" step="0.05" value="0.95" /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <label class="inline">
+            Repeated-coauthorship threshold (docs)
+            <input type="number" id="rep-threshold" min="2" max="20" step="1" value="3" />
+          </label>
+
+          <button id="btn-compute" class="primary" type="button">Compute BC</button>
+          <div id="compute-status" class="muted" aria-live="polite"></div>
+        </aside>
+
+        <div class="explorer-main">
+          <div class="viz-wrap" role="img" aria-labelledby="viz-label">
+            <span class="sr-only" id="viz-label">Force-directed graph of the source neighbourhood. Larger nodes have higher Buscemi centrality; the source node is highlighted.</span>
+            <svg id="viz" aria-hidden="true"></svg>
+            <div class="viz-legend" aria-hidden="true">
+              <span><span class="swatch rfc"></span> RFC</span>
+              <span><span class="swatch id"></span> I-D</span>
+              <span><span class="swatch rep"></span> repeated</span>
+              <span><span class="swatch star"></span> source</span>
+            </div>
+          </div>
+          <div class="ranking">
+            <h3 id="ranking-heading">Top 50 near BC(v;&nbsp;<span id="ranking-source-name">s</span>)</h3>
+            <div class="table-scroll">
+              <table class="bc-ranking sortable" aria-labelledby="ranking-heading">
+                <caption class="sr-only">Top 50 authors by Buscemi centrality relative to the current source. Click a column header to sort; click a row to re-root the explorer to that author.</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" data-col="rank" aria-sort="none">#</th>
+                    <th scope="col" data-col="name" aria-sort="none">Name</th>
+                    <th scope="col" class="num" data-col="A"  aria-sort="none">A(v, s)</th>
+                    <th scope="col" class="num" data-col="BC" aria-sort="descending">BC(v; s)</th>
+                  </tr>
+                </thead>
+                <tbody id="bc-tbody"></tbody>
+              </table>
+            </div>
+
+            <div class="lookup">
+              <label for="bc-lookup" class="lookup-label">
+                Look up any author's BC relative to <span id="lookup-source-name">the current source</span>
+              </label>
+              <input id="bc-lookup" type="search" placeholder="Type a name (try your own)" autocomplete="off" />
+              <div id="bc-lookup-results" class="lookup-results" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== ABOUT ==================== -->
+    <section class="panel" id="tab-about" role="tabpanel" aria-labelledby="tab-btn-about" hidden>
+      <h2>About</h2>
+
+      <figure class="about-buscemi" aria-labelledby="buscemi-caption">
+        <img src="assets/buscemi.jpg" alt="Portrait of Steve Buscemi, for whom the measure is named."
+             width="240" height="320" loading="lazy" decoding="async"
+             onerror="this.style.display='none'" />
+        <figcaption id="buscemi-caption">Steve Buscemi. The canonical source node.</figcaption>
+      </figure>
+
+      <p>
+        Companion to <a href="main.pdf" rel="external"><em>Buscemi Centrality: Source-Relative
+        Centrality in Heterogeneous Affiliation Graphs</em></a> (Underpoot &amp; Flugelhorn,
+        SIGBOVIK 2026).
+      </p>
+      <p>
+        Steve Buscemi is not, as far as anyone knows, an IETF author. Pick any author in the
+        Datatracker graph as the source <em>s</em> (for example <strong>ekr</strong>,
+        <strong>jari</strong>, or <strong>martinthomson</strong>) and read the centrality
+        of every other author relative to them. Call it <em>ekr-centrality</em>,
+        <em>jari-centrality</em>, or whichever analogue you fancy. The paper reminds us that all
+        of graph theory is, at some level, secretly about Steve Buscemi.
+      </p>
+
+      <h3>Formula (from the paper)</h3>
+
+      <figure class="formula-pair">
+        <p class="formula-intro">
+          <strong>Path quality.</strong> Score a single route from one author to
+          another: multiply the quality <em>q</em> of every edge you cross (each
+          greater than 0 and at most 1, so weaker edges drag the product down),
+          then divide by one plus the total traversal cost. Long, weak paths lose
+          to short, strong ones.
+        </p>
+        <div class="formula-math">$$Q(P) = \frac{\prod q(\tau_i)}{1 + \sum c(\tau_i)}$$</div>
+        <figcaption><code>Q(P) = (∏ q(τᵢ)) / (1 + Σ c(τᵢ))</code></figcaption>
+      </figure>
+
+      <figure class="formula-pair">
+        <p class="formula-intro">
+          <strong>Accessibility.</strong> How easily can <em>u</em> reach
+          <em>v</em>? Take the single best path between them; whichever route
+          maximises <em>Q</em> wins. A node is trivially accessible to itself
+          (the empty path has unit quality and zero cost), so <em>A(v,&nbsp;v)&nbsp;=&nbsp;1</em>.
+        </p>
+        <div class="formula-math">$$A(u, v) = \max_{P \,:\, u \leadsto v} Q(P), \qquad A(v, v) = 1$$</div>
+        <figcaption><code>A(u, v) = max over paths P : u ⇝ v of Q(P),  A(v, v) = 1</code></figcaption>
+      </figure>
+
+      <figure class="formula-pair">
+        <p class="formula-intro">
+          <strong>Source neighbourhood.</strong> The local crowd around the
+          source: every author whose weighted distance to <em>s</em> is at
+          most <em>r</em>. Think of <em>r</em> as a radius drawn around <em>s</em>
+          in the graph; the measure only cares about what happens inside
+          that radius.
+        </p>
+        <div class="formula-math">$$N_r(s) = \{\, u : d_w(u, s) \le r \,\}$$</div>
+        <figcaption><code>N_r(s) = { u : d_w(u, s) ≤ r }</code></figcaption>
+      </figure>
+
+      <figure class="formula-pair">
+        <p class="formula-intro">
+          <strong>Neighbourhood weights.</strong> Each neighbour <em>u</em>
+          gets a weight <em>α</em> proportional to how accessible it is from
+          <em>s</em>. The weights sum to 1 across the neighbourhood, so
+          <em>α(u;&nbsp;s)</em> is u's share of the source's local world: a
+          neighbour barely inside <em>N<sub>r</sub>(s)</em> gets a sliver, a
+          well-connected one gets a big slice.
+        </p>
+        <div class="formula-math">$$\alpha(u; s) = \frac{A(u, s)}{\sum_{x \in N_r(s)} A(x, s)}$$</div>
+        <figcaption><code>α(u; s) = A(u, s) / Σ A(x, s) over x in N_r(s)</code></figcaption>
+      </figure>
+
+      <figure class="formula-pair">
+        <p class="formula-intro">
+          <strong>Buscemi centrality.</strong> A blend of two views of how
+          central <em>v</em> is to <em>s</em>. The first term is how easily
+          <em>v</em> reaches <em>s</em> directly. The second is how easily
+          <em>v</em> reaches each of <em>s</em>'s neighbours, averaged by
+          how important each of those neighbours is to <em>s</em>.
+          <em>λ</em> is the dial: at <em>λ = 1</em> you get pure direct
+          accessibility, at <em>λ = 0</em> pure neighbourhood embeddedness;
+          the default <em>λ = 0.5</em> mixes them evenly. A <em>v</em> can
+          score highly by being close to <em>s</em> directly, <em>or</em> by
+          being close to lots of <em>s</em>'s collaborators.
+        </p>
+        <div class="formula-math">$$BC(v; s) = \lambda \cdot A(v, s) + (1 - \lambda) \sum_{u \in N_r(s)} \alpha(u; s) \cdot A(v, u)$$</div>
+        <figcaption><code>BC(v; s) = λ · A(v, s) + (1 − λ) · Σ α(u; s) · A(v, u) over u in N_r(s)</code></figcaption>
+      </figure>
+
+      <h3>How the graph is built</h3>
+      <p>
+        Nodes are Datatracker <code>person</code> records that appear in at least one
+        <code>documentauthor</code> row. Between any two authors <em>u</em> and <em>v</em>
+        there is one edge, whose type is the strongest of:
+      </p>
+      <ul>
+        <li><code>repeated_coauthorship</code>: they share ≥ <em>N</em> documents (default <em>N</em> = 3).</li>
+        <li><code>coauthored_rfc</code>: they share at least one RFC.</li>
+        <li><code>coauthored_id</code>: they share at least one Internet-Draft.</li>
+      </ul>
+
+      <h3>Leaderboard definitions</h3>
+      <p>
+        Datatracker's <code>documentauthor</code> table includes <code>order</code>, a 0-indexed
+        position. &ldquo;First-authored&rdquo; means <code>order == 0</code>; &ldquo;co-authored&rdquo;
+        means <code>order &gt; 0</code>. Editors (marked &ldquo;Ed.&rdquo; on the front page) are
+        counted as authors per RFC 7322 convention. Combined metrics:
+      </p>
+      <ul>
+        <li><strong>Total docs</strong> = first-authored + co-authored, across RFCs and I-Ds.</li>
+        <li><strong>Weighted</strong> = 1.0 × first-authored + 0.5 × co-authored.</li>
+        <li><strong>h-index</strong> = largest <em>h</em> such that the author has <em>h</em> documents each with at least <em>h</em> co-authors.</li>
+      </ul>
+
+      <h3>Caveats</h3>
+      <ul>
+        <li>Approximate path search. <code>A(u, v)</code> is computed via depth-limited modified Dijkstra with Pareto pruning. The exact problem (max-<code>Q</code> simple path) is NP-hard in general. Defaults: depth <em>D</em> = 3, Pareto width <em>K</em> = 6. Increase for more accuracy at the cost of speed.</li>
+        <li>For the BC sum over <em>N<sub>r</sub>(s)</em>, we cap the neighbourhood at its top 50 contributors by <code>α</code> to keep the computation responsive.</li>
+        <li>Datatracker person records are de-duplicated by ID, not by name. Some authors may appear twice under different person IDs if Datatracker has not merged them. This is not considered a deficiency of the measure.</li>
+        <li>All numerical results produced by this tool are strictly indicative. No load-bearing IETF decision should depend on them. The authors reserve the right to disclaim any such decision after the fact.</li>
+      </ul>
+
+      <h3>Future work</h3>
+      <p>
+        It has occurred to the authors that the same construction applies, unchanged, to any
+        affiliation graph with typed edges, and that running it over arXiv or Google Scholar
+        would likely be of broader scientific utility than running it over the IETF
+        Datatracker. The authors are not planning to do that.
+      </p>
+
+    </section>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="wrap">
+      Data © contributors to the IETF Datatracker, CC0. This tool is not affiliated with the IETF,
+      the IAB, the IESG, Steve Buscemi, or Kevin Bacon.
+    </div>
+  </footer>
+
+  <!-- D3 v7 UMD, self-hosted. Loads before the module graph so viz.js can use window.d3. -->
+  <script src="vendor/d3.min.js" defer></script>
+  <!-- KaTeX for rendering the About-tab formulas. Self-hosted; fonts under vendor/katex/fonts/. -->
+  <script src="vendor/katex/katex.min.js" defer></script>
+  <script src="vendor/katex/auto-render.min.js" defer></script>
+  <script type="module" src="js/app.js"></script>
+  <script>
+    // Render $$...$$ LaTeX in the About tab once auto-render is loaded.
+    addEventListener("DOMContentLoaded", () => {
+      if (typeof renderMathInElement !== "function") return;
+      renderMathInElement(document.getElementById("tab-about"), {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "\\(", right: "\\)", display: false },
+        ],
+        throwOnError: false,
+        ignoredTags: ["script", "style", "textarea", "code", "pre"],
+      });
+    });
+  </script>
+</body>
+</html>

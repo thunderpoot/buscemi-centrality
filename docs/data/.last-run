@@ -1,0 +1,5 @@
+2026-04-17T18:48:39+00:00
+# Buscemi Centrality snapshot heartbeat. Updated by
+# scripts/refresh-snapshot.py on every run, including zero-diff
+# runs, so the workflow's commit always pushes and resets GitHub's
+# scheduled-workflow inactivity clock. Safe to ignore.
