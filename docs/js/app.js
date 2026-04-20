@@ -348,6 +348,20 @@ function computeSharedRanks(rows, tieKeyFn) {
   return ranks;
 }
 
+/** Ranks are tied on the *displayed* value, not the full-precision float:
+ *  users who see identical numbers expect identical ranks. This mirrors
+ *  the `.toFixed(n)` rounding each column uses in its <td>. Integer
+ *  columns round to 0 decimals, which is a no-op. */
+const LB_TIE_PRECISION = {
+  rfcFirst: 0, rfcCo: 0, idFirst: 0, idCo: 0,
+  totalDocs: 0, hindex: 0, weighted: 1,
+};
+function roundForDisplay(v, decimals) {
+  if (typeof v !== "number" || !Number.isFinite(v) || !decimals) return v;
+  const m = 10 ** decimals;
+  return Math.round(v * m) / m;
+}
+
 function refreshLeaderboard() {
   if (!state.graph) return;
   const limit = $("#lb-limit").value;
@@ -361,7 +375,9 @@ function refreshLeaderboard() {
   const tbody = $("#leaderboard-tbody");
   tbody.innerHTML = "";
   const rankField = metricField(state.lbSort.col);
-  const ranks = computeSharedRanks(rows, (p) => p[rankField]);
+  const rankPrec = LB_TIE_PRECISION[rankField] ?? 0;
+  const ranks = computeSharedRanks(rows, (p) =>
+    rankField === "name" ? p.name : roundForDisplay(p[rankField], rankPrec));
   rows.forEach((p, i) => {
     const tr = document.createElement("tr");
     tr.classList.add("interactive");
@@ -622,7 +638,7 @@ async function compute() {
   }
   sorted.sort((a, b) => b.BC - a.BC);
   state.lastBCSorted = sorted;
-  const lookupRanks = computeSharedRanks(sorted, (r) => r.BC);
+  const lookupRanks = computeSharedRanks(sorted, (r) => roundForDisplay(r.BC, 3));
   state.lastBCRankMap = new Map(sorted.map((r, i) => [r.id, lookupRanks[i]]));
 
   const sourceName = state.graph.persons.get(state.source)?.name ?? "source";
@@ -673,9 +689,10 @@ function renderBCRanking(result) {
 
   // Shared ranks key off the currently-sorted column. When sorted by "rank"
   // (the synthetic # column) or by anything else, rank ties follow BC — that's
-  // the canonical measure this ranking advertises.
+  // the canonical measure this ranking advertises. Ties match the displayed
+  // 3-decimal rounding so identical-looking rows share a rank.
   const rankField = (col === "rank" || col === "name") ? "BC" : col;
-  const ranks = computeSharedRanks(rows, (r) => r[rankField]);
+  const ranks = computeSharedRanks(rows, (r) => roundForDisplay(r[rankField], 3));
 
   for (let i = 0; i < Math.min(50, rows.length); i++) {
     const r = rows[i];
