@@ -330,6 +330,24 @@ function setupLeaderboards() {
   bindSortHeaders("#leaderboard-table", state.lbSort, refreshLeaderboard);
 }
 
+/** Standard "competition ranking": rows tied on `tieKeyFn` share a rank,
+ *  and the next distinct row jumps ahead (1, 2, 2, 4, ...). `rows` must
+ *  already be sorted in the order to be displayed. */
+function computeSharedRanks(rows, tieKeyFn) {
+  const ranks = new Array(rows.length);
+  let lastKey;
+  let lastRank = 0;
+  for (let i = 0; i < rows.length; i++) {
+    const k = tieKeyFn(rows[i]);
+    if (i === 0 || k !== lastKey) {
+      lastRank = i + 1;
+      lastKey = k;
+    }
+    ranks[i] = lastRank;
+  }
+  return ranks;
+}
+
 function refreshLeaderboard() {
   if (!state.graph) return;
   const limit = $("#lb-limit").value;
@@ -342,6 +360,8 @@ function refreshLeaderboard() {
   syncAriaSort("#leaderboard-table", state.lbSort);
   const tbody = $("#leaderboard-tbody");
   tbody.innerHTML = "";
+  const rankField = metricField(state.lbSort.col);
+  const ranks = computeSharedRanks(rows, (p) => p[rankField]);
   rows.forEach((p, i) => {
     const tr = document.createElement("tr");
     tr.classList.add("interactive");
@@ -349,7 +369,7 @@ function refreshLeaderboard() {
     tr.setAttribute("tabindex", "0");
     tr.setAttribute("aria-label", `Set ${p.name} as Buscemi centrality source.`);
     tr.innerHTML = `
-      <td class="num">${i + 1}</td>
+      <td class="num">${ranks[i]}</td>
       <td>${escapeHtml(p.name)}</td>
       <td class="num">${p.rfcFirst}</td>
       <td class="num">${p.rfcCo}</td>
@@ -602,7 +622,8 @@ async function compute() {
   }
   sorted.sort((a, b) => b.BC - a.BC);
   state.lastBCSorted = sorted;
-  state.lastBCRankMap = new Map(sorted.map((r, i) => [r.id, i + 1]));
+  const lookupRanks = computeSharedRanks(sorted, (r) => r.BC);
+  state.lastBCRankMap = new Map(sorted.map((r, i) => [r.id, lookupRanks[i]]));
 
   const sourceName = state.graph.persons.get(state.source)?.name ?? "source";
   status.textContent =
@@ -650,6 +671,12 @@ function renderBCRanking(result) {
   rows.sort(cmp);
   if (state.bcSort.dir === "asc") rows.reverse();
 
+  // Shared ranks key off the currently-sorted column. When sorted by "rank"
+  // (the synthetic # column) or by anything else, rank ties follow BC — that's
+  // the canonical measure this ranking advertises.
+  const rankField = (col === "rank" || col === "name") ? "BC" : col;
+  const ranks = computeSharedRanks(rows, (r) => r[rankField]);
+
   for (let i = 0; i < Math.min(50, rows.length); i++) {
     const r = rows[i];
     const tr = document.createElement("tr");
@@ -658,7 +685,7 @@ function renderBCRanking(result) {
     tr.setAttribute("tabindex", "0");
     tr.setAttribute("aria-label", `Re-root Buscemi centrality to ${r.name}.`);
     tr.innerHTML = `
-      <td class="num">${i + 1}</td>
+      <td class="num">${ranks[i]}</td>
       <td>${escapeHtml(r.name)}</td>
       <td class="num">${r.A.toFixed(3)}</td>
       <td class="num">${r.BC.toFixed(3)}</td>
