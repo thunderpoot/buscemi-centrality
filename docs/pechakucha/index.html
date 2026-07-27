@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buscemi Centrality · PechaKucha · IETF 126</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="viewport">
+<div id="macwindow">
+<div id="titlebar" aria-hidden="true">
+  <span class="closebox"></span>
+  <span class="stripe"></span>
+  <span class="titletext">Buscemi Centrality</span>
+  <span class="stripe"></span>
+  <span class="zoombox"></span>
+</div>
+<div id="stage">
+<div id="countdown" aria-hidden="true"></div>
+<canvas id="confetti" width="1280" height="720" aria-hidden="true"></canvas>
+
+<!-- ============================================================
+     Slide 1 · Title
+     ============================================================ -->
+<section class="slide">
+  <svg viewBox="0 0 1280 720" style="position:absolute; inset:0;" aria-hidden="true">
+    <g class="sv-edge-faint">
+      <line x1="1000" y1="135" x2="1115" y2="220"/>
+      <line x1="1115" y1="220" x2="1048" y2="326"/>
+      <line x1="1048" y1="326" x2="1172" y2="374"/>
+      <line x1="1048" y1="326" x2="1085" y2="480"/>
+      <line x1="1085" y1="480" x2="950" y2="422"/>
+      <line x1="950" y1="422" x2="922" y2="250"/>
+      <line x1="922" y1="250" x2="1000" y2="135"/>
+      <line x1="1048" y1="326" x2="922" y2="250"/>
+    </g>
+    <circle class="sv-node" cx="1000" cy="135" r="10"/>
+    <circle class="sv-node" cx="1115" cy="220" r="10"/>
+    <circle class="sv-node-source" cx="1048" cy="326" r="17"/>
+    <circle class="sv-node" cx="1172" cy="374" r="10"/>
+    <circle class="sv-node" cx="1085" cy="480" r="10"/>
+    <circle class="sv-node" cx="950" cy="422" r="10"/>
+    <circle class="sv-node" cx="922" cy="250" r="10"/>
+  </svg>
+  <div style="position:relative; padding-top:110px;">
+    <p>SIGBOVIK 2026 &nbsp;&#x2715;&nbsp; IETF 126 Vienna PechaKucha</p>
+    <br />
+    <div class="huge">Buscemi<br>Centrality</div>
+    <p class="lede" style="margin-top:34px;">Source-relative centrality in heterogeneous affiliation graphs</p>
+    <p class="faint" style="margin-top:14px; font-size:16px;">T. E. Vaughan // T. H. Underpoot // Z. Flugelhorn</p>
+    <p class="faint" style="margin-top:14px; font-size:16px;">July 2026</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     Slide 2 · Erdős numbers
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">Prior art or something</div>
+  <h1>You already know the Erd&#337;s number</h1>
+  <svg viewBox="0 0 1150 260" width="1150" height="260" style="margin-top:40px;">
+    <line class="sv-edge" x1="120" y1="130" x2="350" y2="130"/>
+    <line class="sv-edge" x1="350" y1="130" x2="580" y2="130"/>
+    <line class="sv-edge" x1="580" y1="130" x2="810" y2="130"/>
+    <line class="sv-edge" x1="810" y1="130" x2="1040" y2="130"/>
+    <circle class="sv-node-gold" cx="120" cy="130" r="24"/>
+    <circle class="sv-node" cx="350" cy="130" r="19"/>
+    <circle class="sv-node" cx="580" cy="130" r="19"/>
+    <circle class="sv-node" cx="810" cy="130" r="19"/>
+    <circle class="sv-node" cx="1040" cy="130" r="19"/>
+    <text class="sv-label" x="120" y="185" text-anchor="middle" style="fill:var(--gold);">Paul Erd&#337;s</text>
+    <text class="sv-label" x="350" y="185" text-anchor="middle">coauthor</text>
+    <text class="sv-label" x="580" y="185" text-anchor="middle">coauthor</text>
+    <text class="sv-label" x="810" y="185" text-anchor="middle">coauthor</text>
+    <text class="sv-label" x="1040" y="185" text-anchor="middle">your mum</text>
+    <text class="sv-label math" x="350" y="80" text-anchor="middle" font-style="italic" font-size="20">1</text>
+    <text class="sv-label math" x="580" y="80" text-anchor="middle" font-style="italic" font-size="20">2</text>
+    <text class="sv-label math" x="810" y="80" text-anchor="middle" font-style="italic" font-size="20">3</text>
+    <text class="sv-label math" x="1040" y="80" text-anchor="middle" font-style="italic" font-size="20">4</text>
+  </svg>
+  <p class="lede" style="margin-top:50px;">Your distance to a distinguished node in the coauthorship graph, compressed into a single beloved integer.</p>
+</section>
+
+<!-- ============================================================
+     Slide 3 · Bacon numbers
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">Prior art, but Hollywood yeah?</div>
+  <h1>And the Bacon number</h1>
+  <svg viewBox="0 0 1150 260" width="1150" height="260" style="margin-top:40px;">
+    <line class="sv-edge" x1="140" y1="130" x2="430" y2="130"/>
+    <line class="sv-edge" x1="430" y1="130" x2="720" y2="130"/>
+    <line class="sv-edge" x1="720" y1="130" x2="1010" y2="130"/>
+    <circle class="sv-node-gold" cx="140" cy="130" r="24"/>
+    <circle class="sv-node" cx="430" cy="130" r="19"/>
+    <circle class="sv-node" cx="720" cy="130" r="19"/>
+    <circle class="sv-node" cx="1010" cy="130" r="19"/>
+    <text class="sv-label" x="140" y="185" text-anchor="middle" style="fill:var(--gold);">Kevin Bacon</text>
+    <text class="sv-label" x="430" y="185" text-anchor="middle">co-star</text>
+    <text class="sv-label" x="720" y="185" text-anchor="middle">co-star</text>
+    <text class="sv-label" x="1010" y="185" text-anchor="middle">you, presumably</text>
+  </svg>
+  <p class="lede" style="margin-top:50px;">Same construction, basically, but on the film coappearance graph instead of coauthorship.</p>
+  <p class="lede faint" style="margin-top:12px; color: #fff; background: #000; max-width: 660px;">It's "six degrees of separation" but only like &half; a degree of imagination</p>
+</section>
+
+<!-- ============================================================
+     Slide 4 · The problem
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">The problem</div>
+  <h1>These metrics throw almost everything away</h1>
+  <div class="cards" style="margin-top:40px;">
+    <div class="card" style="min-height:300px;">
+      <!-- <div class="num">01</div> -->
+      <h3>One shortest path</h3>
+      <p>All structural information collapses to a single value. Every other path you have is ignored, which is pretty wack.</p>
+    </div>
+    <div class="card" style="min-height:300px;">
+      <!-- <div class="num">02</div> -->
+      <h3>All edges are equal</h3>
+      <p>A handshake, a decade of collaboration, and a shared lift: identical edges and that's totally wack.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Slide 5 · Introducing
+     ============================================================ -->
+<section class="slide">
+  <div style="padding-top:100px;">
+    <div class="kicker">Our contribution</div>
+    <div class="huge" style="font-size:60px;">Buscemi centrality</div>
+    <p class="lede" style="margin-top:34px; font-size:20px; max-width:660px;">A source-relative centrality measure on heterogeneous graphs with typed edges and path-quality semantics.</p>
+    <hr style="border:none; border-top:1px solid var(--dim); width:260px; margin:44px 0 22px;">
+    <p style="font-size:16px;"><span class="muted">Named after Steve Buscemi, but he has not been informed.</span></p>
+  </div>
+  <div id="smush" style="position:absolute; right:67px; top:170px; width:440px;"><img style="width:100%; display:block; border:1px solid #000; box-shadow:2px 2px 0 #000;" src="./smush.gif" alt="Steve Buscemi, uninformed" /></div>
+</section>
+
+<!-- ============================================================
+     Slide 6 · Graph model
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">The model</div>
+  <h1>A graph with typed edges</h1>
+  <div style="display:flex; gap:40px;">
+    <div style="flex:1;">
+      <p class="math" style="font-size:32px; margin:20px 0 40px;">G = (V, E, &tau;)</p>
+      <div class="deflist">
+        <div class="row"><span class="term">V</span><span class="def">individuals (uh, vertices)</span></div>
+        <div class="row"><span class="term">E</span><span class="def">edges/arcs</span></div>
+        <div class="row"><span class="term">&tau; : E &rarr; &#119983;</span><span class="def">each edge gets a type, yeah?</span></div>
+      </div>
+      <div id="cardinals" style="display:flex; gap:16px; margin-top:34px;">
+        <img src="./cardinal-1.jpg" alt="A cardinal" style="height:170px; border:1px solid #000; box-shadow:2px 2px 0 #000;">
+        <img src="./cardinal-2.jpg" alt="Also a cardinal" style="height:170px; border:1px solid #000; box-shadow:2px 2px 0 #000;">
+      </div>
+      <p class="faint" style="font-size:12px; margin-top:12px;">Fig. 1: assorted cardinals, for reference.</p>
+    </div>
+    <svg viewBox="0 0 520 470" width="520" height="470">
+      <line class="sv-edge-teal" x1="240" y1="200" x2="90"  y2="90"/>
+      <line class="sv-edge-gold" x1="240" y1="200" x2="400" y2="100"/>
+      <line class="sv-edge-teal" x1="240" y1="200" x2="430" y2="290"/>
+      <line class="sv-edge sv-edge-dash" x1="240" y1="200" x2="230" y2="380"/>
+      <line class="sv-edge-gold" x1="240" y1="200" x2="65"  y2="290"/>
+      <circle class="sv-node" cx="90"  cy="90"  r="16"/>
+      <circle class="sv-node" cx="400" cy="100" r="16"/>
+      <circle class="sv-node" cx="430" cy="290" r="16"/>
+      <circle class="sv-node" cx="230" cy="380" r="16"/>
+      <circle class="sv-node" cx="65"  cy="290" r="16"/>
+      <circle class="sv-node-source" cx="240" cy="200" r="22"/>
+      <g class="sv-label-sm">
+        <line x1="20"  y1="440" x2="50"  y2="440" style="stroke:var(--teal); stroke-width:3;"/>
+        <text x="60" y="445">coauthorship</text>
+        <line x1="185" y1="440" x2="215" y2="440" style="stroke:var(--gold); stroke-width:3;"/>
+        <text x="225" y="445">coappearance</text>
+        <line x1="352" y1="440" x2="382" y2="440" style="stroke:var(--grey); stroke-width:3;"/>
+        <text x="392" y="445">documented contact</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ============================================================
+     Slide 7 · Cost and quality
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">The model</div>
+  <h1>Every edge type has a price and a promise</h1>
+  <div class="cards" style="margin-top:40px;">
+    <div class="card" style="min-height:310px;">
+      <div class="bigmath gold">c(t) &ge; 0</div>
+      <h3>Traversal cost</h3>
+      <p>How far this kind of edge carries you, whether measured in distance, effort, or awkwardness etc.</p>
+    </div>
+    <div class="card" style="min-height:310px;">
+      <div class="bigmath teal">q(t) &isin; (0, 1]</div>
+      <h3>Quality factor</h3>
+      <p>How much "evidential strength" the interaction actually carries.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Slide 8 · Path quality
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">The mathematics</div>
+  <h1>Path quality</h1>
+  <div class="formula-box">
+    Q(P) &nbsp;=&nbsp; <span class="teal">&prod; q(t)</span>
+    <span class="muted">&nbsp;&frasl;&nbsp;</span>
+    <span class="gold">( 1 + &sum; c(t) )</span>
+  </div>
+  <div style="display:flex; gap:80px; max-width:900px; margin:0 auto;">
+    <div style="flex:1;">
+      <h3 style="font-family:var(--serif); font-size:19px; color:var(--teal); margin-bottom:10px;">Multiplicative quality</h3>
+      <p style="font-size:15px; color:var(--grey);">One weak link drags the whole chain down.</p>
+    </div>
+    <div style="flex:1;">
+      <h3 style="font-family:var(--serif); font-size:19px; color:var(--gold); margin-bottom:10px;">Additive cost</h3>
+      <p style="font-size:15px; color:var(--grey);">Long paths pay for every hop they take.</p>
+    </div>
+  </div>
+  <p class="footline"><span class="muted"></p>
+</section>
+
+<!-- ============================================================
+     Slide 9 · Accessibility
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">The mathematics</div>
+  <h1>Accessibility: take your best path</h1>
+  <p class="math" style="font-size:27px; margin-top:14px;">A(u, v) &nbsp;=&nbsp; max &nbsp;Q(P) &nbsp;&nbsp;over simple paths&nbsp; u &#8669; v</p>
+  <svg viewBox="0 0 1150 300" width="1150" height="300" style="margin-top:26px;">
+    <line class="sv-edge sv-edge-dash" x1="145" y1="215" x2="1000" y2="215"/>
+    <line class="sv-edge-teal" x1="145" y1="215" x2="570" y2="80"/>
+    <line class="sv-edge-teal" x1="570" y1="80"  x2="1000" y2="215"/>
+    <circle class="sv-node" cx="145" cy="215" r="21"/>
+    <circle class="sv-node" cx="570" cy="80"  r="17"/>
+    <circle class="sv-node-source" cx="1000" cy="215" r="21"/>
+    <text class="sv-label math" x="145"  y="268" text-anchor="middle" font-style="italic" font-size="17">u</text>
+    <text class="sv-label math" x="1000" y="268" text-anchor="middle" font-style="italic" font-size="17" style="fill:var(--pink);">v</text>
+    <text class="sv-label-sm" x="570" y="42"  text-anchor="middle" style="fill:var(--teal);">longer but strong &nbsp;&middot;&nbsp; q = 0.9 each</text>
+    <text class="sv-label-sm" x="570" y="248" text-anchor="middle" style="fill:var(--dim);">short but weak &nbsp;&middot;&nbsp; q = 0.4</text>
+  </svg>
+  <p class="footline"><span class="muted">Simple paths only.</span> <span class="faint it">&ldquo;In principle one could traverse a cycle indefinitely. We have chosen not to.&rdquo;</span></p>
+</section>
+
+<!-- ============================================================
+     Slide 10 · Source neighbourhood
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">The mathematics</div>
+  <h1>The source neighbourhood</h1>
+  <div style="display:flex; gap:56px; align-items:center;">
+    <svg viewBox="0 0 520 470" width="520" height="470">
+      <circle class="sv-ring" cx="250" cy="235" r="185"/>
+      <line class="sv-edge" x1="250" y1="235" x2="160" y2="150"/>
+      <line class="sv-edge" x1="250" y1="235" x2="345" y2="160"/>
+      <line class="sv-edge" x1="250" y1="235" x2="360" y2="310"/>
+      <line class="sv-edge" x1="250" y1="235" x2="155" y2="320"/>
+      <circle class="sv-node" cx="160" cy="150" r="14"/>
+      <circle class="sv-node" cx="345" cy="160" r="14"/>
+      <circle class="sv-node" cx="360" cy="310" r="14"/>
+      <circle class="sv-node" cx="155" cy="320" r="14"/>
+      <circle class="sv-node-faint" cx="490" cy="110" r="12"/>
+      <circle class="sv-node-faint" cx="500" cy="400" r="12"/>
+      <circle class="sv-node-source" cx="250" cy="235" r="21"/>
+      <text class="sv-label math" x="250" y="30" text-anchor="middle" font-style="italic" font-size="17" style="fill:var(--pink);">N&#7523;(s)</text>
+    </svg>
+    <div style="flex:1;">
+      <p class="lede" style="font-size:17px;">Everyone within weighted radius <span class="math">r</span> of the source:</p>
+      <p class="math" style="font-size:22px; margin:18px 0 30px;">N&#7523;(s) = { u : d&#7524;(u, s) &le; r }</p>
+      <p class="lede" style="font-size:15px;">Each member gets a weight <span class="math">&alpha;(u; s)</span>, proportional to its accessibility to the source. That is how strongly it belongs to the inner circle.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Slide 11 · The measure
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">The measure</div>
+  <h1>Buscemi centrality, at last</h1>
+  <div class="formula-box" style="font-size:29px; max-width:1050px;">
+    BC(v; s) &nbsp;=&nbsp; &lambda; <span class="pink">A(v, s)</span>
+    &nbsp;+&nbsp; (1 &minus; &lambda;) <span class="teal">&sum; &alpha;(u; s) A(v, u)</span>
+  </div>
+  <div class="deflist" style="max-width:900px; margin:0 auto;">
+    <div class="row"><span class="term" style="width:120px; color:var(--pink);">&lambda; = 1</span><span class="def">pure proximity to the source</span></div>
+    <div class="row"><span class="term" style="width:120px; color:var(--teal);">&lambda; = 0</span><span class="def">pure embeddedness in the source's scene</span></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Slide 12 · One sensible source
+     ============================================================ -->
+<section class="slide">
+  <div style="padding-top:90px;">
+    <div class="kicker">A simplification</div>
+    <p class="statement">A measure named Buscemi centrality admits only one sensible choice of source node.</p>
+    <p class="math pink" style="font-size:42px; margin-top:56px;">s &nbsp;&#8788;&nbsp; Buscemi</p>
+    <p class="lede it" style="margin-top:36px;">QED, n'est-ce pas?</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     Slide 13 · Generalisation
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">Relation to prior work</div>
+  <h1>It strictly generalises everything you love</h1>
+  <div class="steps" style="margin-top:36px;">
+    <div class="step"><span class="dot">1</span><span class="lhs">Set q(t) = 1, &nbsp;c(t) = 1</span><span class="rhs">all edges equal again, yes?</span></div>
+    <div class="step"><span class="dot">2</span><span class="lhs">A(v) = 1 &frasl; (1 + d)</span><span class="rhs">accessibility collapses to hop count</span></div>
+    <div class="step"><span class="dot">3</span><span class="lhs">Ranking &equiv; Bacon number</span><span class="rhs">with the source set to Kevin Bacon</span></div>
+    <div class="step"><span class="dot">4</span><span class="lhs">Bacon &sub; Erd&#337;s construction</span><span class="rhs">so the Erd&#337;s number falls too</span></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Slide 14 · The big claim
+     ============================================================ -->
+<section class="slide">
+  <div style="padding-top:110px;">
+    <p class="statement">It follows that all of graph theory is, at some level, secretly about Steve Buscemi.</p>
+    <p style="font-size:18px; margin-top:56px;"><span class="muted">Some may argue that this is a non-sequitur, or non-constructive etc, but the authors maintain that it is axiomatic.</span></p>
+  </div>
+</section>
+
+<!-- ============================================================
+     Slide 15 · Worked example: Goodman
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">Worked example</div>
+  <h1>John Goodman</h1>
+  <div style="display:flex; gap:48px; align-items:center;">
+    <svg viewBox="0 0 620 470" width="620" height="470">
+      <line class="sv-edge-gold" x1="230" y1="270" x2="510" y2="170"/>
+      <line class="sv-edge" x1="230" y1="270" x2="60"  y2="410"/>
+      <line class="sv-edge" x1="230" y1="270" x2="480" y2="400"/>
+      <line class="sv-edge sv-edge-dash" x1="510" y1="170" x2="480" y2="400"/>
+      <circle class="sv-node-source" cx="230" cy="270" r="25"/>
+      <circle class="sv-node-gold" cx="510" cy="170" r="21"/>
+      <circle class="sv-node" cx="60"  cy="410" r="14"/>
+      <circle class="sv-node" cx="480" cy="400" r="14"/>
+      <text class="sv-label" x="230" y="325" text-anchor="middle" style="fill:var(--pink);">Buscemi</text>
+      <text class="sv-label" x="510" y="130" text-anchor="middle" style="fill:var(--gold);">Goodman</text>
+      <text class="sv-label-sm" x="280" y="190" style="fill:var(--gold);">Monsters, Inc. &nbsp;&middot;&nbsp; q = 0.9</text>
+    </svg>
+    <div style="flex:1;">
+      <p class="muted" style="font-size:14px; font-weight:700;">Best path</p>
+      <p class="math" style="font-size:17px; margin-bottom:20px;">direct coappearance</p>
+      <p class="muted" style="font-size:14px; font-weight:700;">Q(P)</p>
+      <p class="math" style="font-size:17px; margin-bottom:20px;">0.9 &frasl; (1 + 1) &nbsp;=&nbsp; 0.45</p>
+      <p class="muted" style="font-size:14px; font-weight:700;">Embeddedness</p>
+      <p class="math" style="font-size:17px; margin-bottom:36px;">0.41 across N&#7523;</p>
+      <p class="math" style="font-size:27px;">BC(Goodman) = <span class="gold" style="font-weight:700;">0.43</span></p>
+    </div>
+  </div>
+  <p class="footline"><span class="muted">Aside from The Big Lebowski and Monsters Inc, Goodman and Buscemi also share Barton Fink, which arguably qualifies him for the <code>repeated_coappearance</code> upgrade, but the authors decline to recompute, so there.</span></p>
+</section>
+
+<!-- ============================================================
+     Slide 16 · Sandler
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">Worked example</div>
+  <h1>Adam Sandler outranks John Goodman</h1>
+  <p class="lede" style="font-size:17px;">Repeated coappearance is stronger evidence: Billy Madison, Mr.&nbsp;Deeds, and more, so it earns a dedicated edge type.</p>
+  <p class="math teal" style="font-size:21px; margin-top:22px;">q(repeated_coappearance) = 0.95</p>
+  <div class="stats">
+    <div class="stat"><div class="value">0.475</div><div class="label">A(Sandler)</div></div>
+    <div class="stat"><div class="value losing">0.450</div><div class="label">A(Goodman)</div></div>
+    <div class="stat"><div class="value">&asymp; 0.49</div><div class="label">BC(Sandler)</div></div>
+  </div>
+  <p class="footline">N.B.: This result is not considered a deficiency of the measure. He's made some pretty good movies honestly.</p>
+</section>
+
+<!-- ============================================================
+     Slide 17 · Leaderboard
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">Results</div>
+  <h1>Sample Buscemi centralities</h1>
+  <table>
+    <thead>
+      <tr><th>Node</th><th>Best path type</th><th>A(v)</th><th>BC(v)</th></tr>
+    </thead>
+    <tbody>
+      <tr class="source"><td>Steve Buscemi</td><td>(source)</td><td class="n">1.000</td><td class="n">1.000</td></tr>
+      <tr><td>Adam Sandler</td><td>direct, repeated</td><td class="n">0.475</td><td class="n">0.49</td></tr>
+      <tr><td>John Goodman</td><td>direct</td><td class="n">0.450</td><td class="n">0.43</td></tr>
+      <tr><td>Kevin Bacon</td><td>direct (Sleepers, 1996)</td><td class="n">0.450</td><td class="n">0.42</td></tr>
+      <tr><td>Harvey Keitel</td><td>direct</td><td class="n">0.450</td><td class="n">0.41</td></tr>
+      <tr class="outlier"><td>Paul Erd&#337;s</td><td>not established</td><td class="n">0.000</td><td class="n">0.000</td></tr>
+    </tbody>
+  </table>
+  <p class="footline">You can calculate these for yourself if you don't believe me, and I won't mind. Paul Erd&#337;s has no path to Steve Buscemi, as far as I know.</p>
+</section>
+
+<!-- ============================================================
+     Slide 18 · IETF edition
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">Why you are seeing this here</div>
+  <h1>The IETF edition</h1>
+  <p class="lede" style="font-size:19px; color:var(--ink); max-width:880px;">Buscemi Centrality Explorer, running on the IETF co-authorship graph.</p>
+  <p class="lede it" style="font-size:18px; color:var(--pink); margin-top:14px; max-width:880px;">Want to know your ekr centrality? Thomson centrality, or Nottingham centrality?</p>
+  <div class="cards" style="margin-top:28px; gap:28px;">
+    <div class="card" style="padding:26px 28px;">
+      <h3 class="pink" style="font-size:17px;">Datatracker, weekly</h3>
+      <p style="font-size:13px;">The full RFC and Internet-Draft author graph, pulled from the Datatracker API.</p>
+    </div>
+    <div class="card" style="padding:26px 28px;">
+      <h3 class="pink" style="font-size:17px;">Anyone can be Buscemi</h3>
+      <p style="font-size:13px;">Pin any author who has ever written an I-D as the source node.</p>
+    </div>
+    <div class="card" style="padding:26px 28px;">
+      <h3 class="pink" style="font-size:17px;">Live-tunable parameters</h3>
+      <p style="font-size:13px;">Quality, cost, radius and &lambda;, adjustable in the browser. For science.</p>
+    </div>
+    <div id="qr" class="card" style="flex:0 0 auto; padding:12px 12px 8px; text-align:center;">
+      <img src="./qr.png" width="150" height="150" style="display:block; margin:0 auto;" alt="QR code linking to the Buscemi Centrality Explorer">
+      <p style="font-size:11px; color:#000; margin-top:6px;">the Explorer</p>
+    </div>
+  </div>
+  <p class="footline">Rankings are final, binding, and unappealable, until someone commits a new Internet-Draft, which happens on the order of hourly.</p>
+</section>
+
+<!-- ============================================================
+     Slide 19 · Limitations
+     ============================================================ -->
+<section class="slide">
+  <div class="kicker">Limitations</div>
+  <h1>Threats to validity</h1>
+  <div class="lims" style="margin-top:34px;">
+    <div class="lim"><span class="pilcrow">&sect;</span><p>The measure is undefined for graphs containing no Steve Buscemi.</p></div>
+    <div class="lim"><span class="pilcrow">&sect;</span><p>Extension to directed graphs is left as an exercise.</p></div>
+    <div class="lim"><span class="pilcrow">&sect;</span><p>The authors have not computed their own Buscemi centrality, but assume it is non-zero.</p></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Slide 20 · Fin
+     ============================================================ -->
+<section class="slide">
+  <svg viewBox="0 0 1280 720" style="position:absolute; inset:0;" aria-hidden="true">
+    <g class="sv-edge-faint">
+      <line x1="155" y1="145" x2="280" y2="212"/>
+      <line x1="280" y1="212" x2="212" y2="336"/>
+      <line x1="212" y1="336" x2="115" y2="442"/>
+      <line x1="212" y1="336" x2="317" y2="422"/>
+      <line x1="317" y1="422" x2="250" y2="547"/>
+      <line x1="115" y1="442" x2="250" y2="547"/>
+    </g>
+    <circle class="sv-node" cx="155" cy="145" r="10"/>
+    <circle class="sv-node" cx="280" cy="212" r="10"/>
+    <circle class="sv-node-source" cx="212" cy="336" r="16"/>
+    <circle class="sv-node" cx="115" cy="442" r="10"/>
+    <circle class="sv-node" cx="317" cy="422" r="10"/>
+    <circle class="sv-node" cx="250" cy="547" r="10"/>
+  </svg>
+  <div style="position:relative; padding-left:420px; padding-top:90px;">
+    <div class="huge" style="font-size:60px;">Fin.</div>
+    <div class="linklist">
+      <div class="row"><span class="k">Paper + code</span><span class="v"><a href="https://github.com/thunderpoot/buscemi-centrality">github.com/thunderpoot/buscemi-centrality</a></span></div>
+      <div class="row"><span class="k">Explorer</span><span class="v"><a href="https://thunderpoot.github.io/buscemi-centrality">thunderpoot.github.io/buscemi-centrality</a></span></div>
+      <div class="row"><span class="k">Venue</span><span class="v muted">SIGBOVIK 2026 &amp; IETF 126 Vienna</span></div>
+    </div>
+    <p class="faint it" style="font-size:13px; margin-top:44px; max-width:560px; line-height:1.5;">Steve Buscemi was not consulted during the preparation of this work and is under no obligation to acknowledge its existence.</p>
+  </div>
+</section>
+
+</div><!-- /stage -->
+</div><!-- /macwindow -->
+</div><!-- /viewport -->
+
+<!-- ============================================================
+     Presenter chrome
+     ============================================================ -->
+<div id="hud">
+  <span id="counter">1 / 20</span>
+  <span id="clock"></span>
+  <span class="spacer"></span>
+  <button id="pk-toggle" title="Auto-advance every 20 seconds (P)">PechaKucha &#9654;</button>
+  <button id="help-toggle" title="Keyboard shortcuts (?)">?</button>
+</div>
+
+<div id="help">
+  <div class="panel">
+    <h2>Keys</h2>
+    <dl>
+      <dt><kbd>&rarr;</kbd> <kbd>space</kbd></dt><dd>next slide</dd>
+      <dt><kbd>&larr;</kbd></dt><dd>previous slide</dd>
+      <dt><kbd>P</kbd></dt><dd>start / stop PechaKucha auto-advance (20 s per slide)</dd>
+      <dt><kbd>F</kbd></dt><dd>fullscreen</dd>
+      <dt><kbd>Home</kbd> <kbd>End</kbd></dt><dd>first / last slide</dd>
+      <dt><kbd>?</kbd></dt><dd>this panel</dd>
+    </dl>
+  </div>
+</div>
+
+<script src="deck.js"></script>
+</body>
+</html>

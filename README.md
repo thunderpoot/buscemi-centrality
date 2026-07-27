@@ -4,4 +4,4 @@ _Submission to SIGBOVIK 2026._
 
 ![smuscemi](docs/assets/smuscemi.gif)
 
-[The paper](main.pdf) | [IETF Explorer](https://thunderpoot.github.io/buscemi-centrality)
+[The paper](main.pdf) | [IETF Explorer](https://thunderpoot.github.io/buscemi-centrality) | [The PechaKucha](https://thunderpoot.github.io/buscemi-centrality/pechakucha)

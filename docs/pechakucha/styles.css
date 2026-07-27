@@ -1,0 +1,379 @@
+/* ============================================================
+   Buscemi Centrality · PechaKucha deck
+   Theme: Macintosh System 7 (1991). Monochrome chrome, colour
+   reserved for graph semantics, like a colour icon on a grey desktop.
+   Change the tokens below and the whole deck follows.
+   ============================================================ */
+:root {
+  --bg:   #FFFFFF;   /* window content */
+  --ink:  #000000;   /* text */
+  --pink: #D6336C;   /* the source node */
+  --gold: #A87900;   /* coappearance / secondary accent */
+  --teal: #1F756D;   /* coauthorship / quality accent */
+  --grey: #444444;   /* muted text */
+  --dim:  #808080;   /* faint text, weak edges */
+  --card: #FFFFFF;   /* panel fill */
+  --edge: #BBBBBB;   /* faint constellation edges */
+
+  /* Chicago and Geneva if you have them (Macs mostly do, in spirit);
+     honest fallbacks otherwise. Monaco for anything typewritten. */
+  --chicago: "Chicago", "Charcoal", "Geneva", "Lucida Grande", Helvetica, Arial, sans-serif;
+  --geneva:  "Geneva", "Lucida Grande", Verdana, Helvetica, sans-serif;
+  --monaco:  "Monaco", "Courier New", monospace;
+
+  /* legacy aliases so existing markup keeps working */
+  --serif: var(--chicago);
+  --sans:  var(--geneva);
+  --math:  var(--monaco);
+
+  --slide-w: 1280px;
+  --slide-h: 720px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* the desktop: 50% dither grey, as nature intended */
+html, body {
+  height: 100%;
+  background-color: #7F7F7F;
+  background-image:
+    linear-gradient(45deg, #6E6E6E 25%, transparent 25%, transparent 75%, #6E6E6E 75%),
+    linear-gradient(45deg, #6E6E6E 25%, transparent 25%, transparent 75%, #6E6E6E 75%);
+  background-position: 0 0, 2px 2px;
+  background-size: 4px 4px;
+  color: var(--ink);
+  font-family: var(--geneva);
+  overflow: hidden;
+}
+
+::selection { background: #000; color: #fff; }
+
+/* ---------- viewport + the window ---------- */
+#viewport {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-bottom: 46px; /* room for the controls under the window */
+}
+
+#macwindow {
+  transform-origin: center center; /* scaled by deck.js */
+  background: var(--bg);
+  border: 1px solid #000;
+  box-shadow: 2px 2px 0 #000;
+}
+
+/* title bar: pinstripes, centred title, close box left, zoom box right */
+#titlebar {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  background: var(--bg);
+  border-bottom: 1px solid #000;
+  user-select: none;
+}
+#titlebar .stripe {
+  flex: 1;
+  height: 13px;
+  background: repeating-linear-gradient(to bottom, #000 0 1px, transparent 1px 3px);
+}
+#titlebar .titletext {
+  font-family: var(--chicago);
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+}
+#titlebar .closebox,
+#titlebar .zoombox {
+  width: 14px; height: 14px;
+  border: 1px solid #000;
+  background: var(--bg);
+  flex-shrink: 0;
+  position: relative;
+}
+#titlebar .zoombox::after {
+  content: "";
+  position: absolute;
+  left: 1px; top: 1px;
+  width: 7px; height: 7px;
+  border: 1px solid #000;
+}
+
+#stage {
+  width: var(--slide-w);
+  height: var(--slide-h);
+  position: relative;
+  background: var(--bg);
+}
+
+/* ---------- slides ---------- */
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 52px 67px;
+  display: none;
+}
+.slide.current { display: block; }
+/* System 7 does not animate. */
+
+/* ---------- typography ---------- */
+.kicker {
+  font-family: var(--chicago);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.kicker::before { content: "\25C6\00a0\00a0"; font-size: 9px; vertical-align: 2px; } /* small diamond, like a menu marker */
+
+h1 {
+  font-family: var(--chicago);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1.08;
+  margin-bottom: 26px;
+}
+
+.huge {
+  font-family: var(--chicago);
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 1.0;
+}
+
+.statement {
+  font-family: var(--chicago);
+  font-weight: 700;
+  font-size: 42px;
+  line-height: 1.15;
+  max-width: 1080px;
+}
+
+.lede   { font-size: 19px; color: var(--grey); max-width: 1000px; line-height: 1.45; }
+.muted  { color: var(--grey); }
+.faint  { color: var(--dim); }
+.pink   { color: var(--pink); }
+.gold   { color: var(--gold); }
+.teal   { color: var(--teal); }
+.it     { font-style: italic; }
+
+.math {
+  font-family: var(--monaco);
+  font-style: normal; /* Monaco does not do italics, and neither did 1991 */
+}
+
+.footline {
+  position: absolute;
+  left: 67px;
+  bottom: 34px;
+  right: 67px;
+  font-size: 14px;
+  color: var(--grey);
+}
+
+/* ---------- reusable layout bits ---------- */
+.cards { display: flex; gap: 38px; margin-top: 10px; }
+
+.card {
+  background: var(--card);
+  border: 1px solid #000;
+  box-shadow: 2px 2px 0 #000;
+  padding: 30px 34px;
+  flex: 1;
+}
+.card .num   { font-family: var(--monaco); font-size: 26px; color: var(--pink); margin-bottom: 12px; }
+.card h3     { font-family: var(--chicago); font-size: 22px; margin-bottom: 12px; }
+.card p      { font-size: 15px; color: var(--grey); line-height: 1.45; }
+.card .bigmath { font-family: var(--monaco); font-size: 28px; margin-bottom: 14px; }
+
+/* dialogue-box treatment for the big formulas */
+.formula-box {
+  background: var(--card);
+  border: 2px solid #000;
+  outline: 1px solid #000;
+  outline-offset: -6px;
+  padding: 40px 30px;
+  text-align: center;
+  font-family: var(--monaco);
+  font-size: 30px;
+  margin: 6px auto 34px;
+  max-width: 900px;
+}
+
+.deflist { margin-top: 8px; }
+.deflist .row { display: flex; align-items: baseline; margin-bottom: 20px; }
+.deflist .term { font-family: var(--monaco); font-size: 20px; color: var(--pink); width: 220px; flex-shrink: 0; }
+.deflist .def  { font-size: 17px; color: var(--grey); }
+
+.steps { margin-top: 6px; }
+.steps .step { display: flex; align-items: baseline; gap: 22px; margin-bottom: 28px; }
+.steps .dot {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1.5px solid #000; color: var(--ink);
+  background: var(--card);
+  font-family: var(--chicago);
+  font-size: 14px; font-weight: 700;
+  display: grid; place-items: center;
+  flex-shrink: 0; position: relative; top: 6px;
+}
+.steps .lhs { font-family: var(--monaco); font-size: 19px; width: 480px; flex-shrink: 0; }
+.steps .rhs { font-size: 16px; color: var(--grey); }
+
+.stats { display: flex; gap: 60px; margin-top: 34px; }
+.stat .value { font-family: var(--chicago); font-weight: 700; font-size: 52px; color: var(--pink); }
+.stat .value.losing { color: var(--dim); }
+.stat .label { font-family: var(--monaco); font-size: 15px; color: var(--grey); margin-top: 6px; }
+
+/* limitations */
+.lims { margin-top: 10px; }
+.lims .lim { display: flex; gap: 24px; align-items: baseline; margin-bottom: 34px; }
+.lims .pilcrow { font-family: var(--chicago); font-size: 28px; color: var(--pink); }
+.lims p { font-size: 21px; line-height: 1.35; }
+
+/* table: a Finder list view, more or less */
+table { border-collapse: collapse; width: 100%; margin-top: 6px; border: 1px solid #000; }
+th, td { padding: 10px 16px; font-size: 15px; border: 1px solid #999; text-align: left; }
+th {
+  color: var(--ink);
+  background: #DDD;
+  font-weight: 700;
+  border-bottom: 2px solid #000;
+}
+tbody tr:nth-child(odd) { background: #F4F4F4; }
+td.n { font-family: var(--monaco); }
+tr.source td { color: var(--pink); }
+tr.source td:first-child { font-weight: 700; }
+tr.outlier td { color: var(--dim); font-style: italic; }
+
+/* links list on the fin slide */
+.linklist { margin-top: 30px; }
+.linklist .row { display: flex; margin-bottom: 18px; font-size: 16px; }
+.linklist .k { color: var(--ink); font-weight: 700; width: 160px; flex-shrink: 0; font-family: var(--chicago); }
+.linklist .v a { color: var(--grey); text-decoration: underline; }
+.linklist .v a:hover { background: #000; color: #fff; text-decoration: none; }
+
+/* SVG diagrams: white nodes, black outlines, colour only where it means something */
+svg text { font-family: var(--geneva); }
+.sv-node        { fill: #FFF; stroke: #000; stroke-width: 2; }
+.sv-node-faint  { fill: #FFF; stroke: #AAA; stroke-width: 2; }
+.sv-node-source { fill: var(--pink); stroke: #000; stroke-width: 2; }
+.sv-node-gold   { fill: var(--gold); stroke: #000; stroke-width: 2; }
+.sv-edge        { stroke: #000; stroke-width: 1.5; }
+.sv-edge-faint  { stroke: var(--edge); stroke-width: 1.5; }
+.sv-edge-teal   { stroke: var(--teal); stroke-width: 3; }
+.sv-edge-gold   { stroke: var(--gold); stroke-width: 3; }
+.sv-edge-dash   { stroke-dasharray: 7 7; }
+.sv-label       { fill: var(--grey); font-size: 14px; }
+.sv-label-sm    { fill: var(--grey); font-size: 12px; }
+.sv-ring        { fill: none; stroke: var(--pink); stroke-width: 1.5; stroke-dasharray: 8 8; }
+
+/* ============================================================
+   Chrome: controls, notes, help
+   ============================================================ */
+#hud {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 18px;
+  font-size: 13px;
+  color: #000;
+  z-index: 30;
+  user-select: none;
+  font-family: var(--geneva);
+}
+#hud .spacer { flex: 1; }
+#hud #counter, #hud #clock {
+  background: #FFF;
+  border: 1px solid #000;
+  padding: 3px 10px;
+  font-family: var(--monaco);
+  font-size: 12px;
+}
+#hud button {
+  background: #FFF;
+  border: 1px solid #000;
+  /* border-radius: 12px; */
+  color: #000;
+  font-family: var(--chicago);
+  font-size: 13px;
+  padding: 4px 16px;
+  cursor: pointer;
+  box-shadow: 1px 1px 0 #000;
+}
+#hud button:active { background: #000; color: #FFF; }
+#hud button:focus-visible { outline: 2px dotted #000; outline-offset: 2px; }
+#hud button.active { box-shadow: 0 0 0 2px #FFF, 0 0 0 3.5px #000; }
+#clock.overtime { color: var(--pink); border-color: var(--pink); }
+
+/* confetti for the final slide: sits over the content, under the countdown */
+#confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* PechaKucha countdown: big, top-right of the slide, impossible to miss */
+#countdown {
+  display: none;
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  z-index: 10;
+  background: #FFF;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0 #000;
+  padding: 8px 18px;
+  font-family: var(--monaco);
+  font-size: 10px;
+  line-height: 1;
+  min-width: 80px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+#countdown.running { display: block; }
+#countdown.ending {
+  color: #FFF;
+  background: var(--pink);
+  border-color: #000;
+}
+
+/* help overlay: a modal dialogue box */
+#help {
+  position: fixed; inset: 0;
+  background: rgba(127, 127, 127, 0.5);
+  display: none;
+  place-items: center;
+  z-index: 50;
+}
+#help.open { display: grid; }
+#help .panel {
+  background: #FFF;
+  border: 2px solid #000;
+  outline: 1px solid #000;
+  outline-offset: -6px;
+  box-shadow: 2px 2px 0 #000;
+  padding: 36px 44px;
+  min-width: 460px;
+}
+#help h2 { font-family: var(--chicago); font-size: 24px; margin-bottom: 20px; }
+#help dl { display: grid; grid-template-columns: auto 1fr; gap: 10px 24px; font-size: 15px; }
+#help dt { color: #000; font-weight: 700; font-family: var(--monaco); }
+#help dd { color: var(--grey); }
+
+kbd {
+  font-family: var(--monaco);
+  background: #FFF;
+  border: 1px solid #000;
+  /* border-radius: 3px; */
+  box-shadow: 1px 1px 0 #000;
+  padding: 1px 7px;
+  font-size: 13px;
+}
